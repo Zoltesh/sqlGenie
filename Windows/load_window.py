@@ -1,6 +1,6 @@
 """
 Allows the user to Load a query. The file contains placeholder text and the UI provides the user
-with the ability to fill out the placeholders in a clear and clean way.
+with the ability to fill out the placeholders in a clear and clean way
 """
 import tkinter
 

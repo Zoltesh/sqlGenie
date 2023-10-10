@@ -1,6 +1,6 @@
 """
 Facilitate connection to database. Currently only connects and prints out Success or Fail.
-Later code it to provide interaction with the database
+Later code it to provide interaction with the database.
 """
 
 import customtkinter as ctk

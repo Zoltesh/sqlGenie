@@ -1,3 +1,9 @@
+"""
+Load and Create sql templates to make reusing queries easier. Specifically designed to allow
+easy placeholder replacement for queries that run multiple times with different sql objects
+"""
+
+
 import customtkinter as ctk
 from Windows import login_window, load_window
 
