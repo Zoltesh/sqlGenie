@@ -87,7 +87,8 @@ class LoadWindow:
 
         self.parent_frame_2 = ctk.CTkFrame(self.app)
         self.parent_frame_2.grid(row=1, column=0, sticky='nsew')
-        self.parent_frame_2.columnconfigure(1, weight=1)
+        self.parent_frame_2.columnconfigure(0, weight=0)
+        self.parent_frame_2.columnconfigure(1, weight=3)
 
         self.parent_frame_3 = ctk.CTkFrame(self.app)
         self.parent_frame_3.grid(row=2, column=0, sticky='nsew')
@@ -100,16 +101,14 @@ class LoadWindow:
 
         # Frame 2 child 1 widgets
         self.child_frame_2_1 = ctk.CTkFrame(self.parent_frame_2)
-        self.child_frame_2_1.grid(row=0, column=0)
-        self.child_frame_2_1.columnconfigure(0, weight=1)
-        self.child_frame_2_1.columnconfigure(1, weight=1)
+        self.child_frame_2_1.grid(row=0, column=0, sticky='nsew')
 
         self.placeholder_label_2_1 = ctk.CTkLabel(self.child_frame_2_1, text='Variables', font=self.label_font,
-                                                  height=30)
+                                                  height=30, width=30)
         self.placeholder_label_2_1.grid(row=0, column=0, padx=20, sticky='w')
 
         self.placeholder_combobox_2_1 = ctk.CTkComboBox(self.child_frame_2_1, values=['1', '2'], height=30)
-        self.placeholder_combobox_2_1.grid(row=0, column=1, sticky='w')
+        self.placeholder_combobox_2_1.grid(row=0, column=1, sticky='nsew')
 
         # Frame 2 child 2 widgets
         self.child_frame_2_2 = ctk.CTkFrame(self.parent_frame_2)
@@ -124,8 +123,8 @@ class LoadWindow:
         self.child_frame_2_3.grid(row=1, column=0, sticky='nsew')
 
         self.description_label_2_3 = ctk.CTkLabel(self.child_frame_2_3, text='Description', font=self.label_font,
-                                                  height=30)
-        self.description_label_2_3.grid(row=0, column=0, sticky='n', padx=20)
+                                                  height=30, width=30)
+        self.description_label_2_3.grid(row=0, column=0, sticky='nw', padx=20)
 
         self.description_textbox_2_3 = ctk.CTkTextbox(self.child_frame_2_3, font=self.text_font)
         self.description_textbox_2_3.grid(row=0, column=1, sticky='nsew', pady=10)
