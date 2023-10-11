@@ -102,12 +102,13 @@ class LoadWindow:
         self.app.grid_rowconfigure(1, weight=2)
         self.app.grid_rowconfigure(2, weight=5)
 
-        # Create frames for each column
+        # Title frame
         self.parent_frame_1 = ctk.CTkFrame(self.app)
         self.parent_frame_1.grid(row=0, column=0, sticky='nsew')
         self.parent_frame_1.columnconfigure(0, weight=1)
         self.parent_frame_1.rowconfigure(0, weight=0)
 
+        # New keyword frame
         self.parent_frame_2 = ctk.CTkFrame(self.app)
         self.parent_frame_2.grid(row=1, column=0, sticky='nsew')
         self.parent_frame_2.columnconfigure(0, weight=0)
@@ -116,6 +117,8 @@ class LoadWindow:
         self.parent_frame_2.rowconfigure(0, weight=0)
         self.parent_frame_2.rowconfigure(1, weight=0)
 
+        # Query preview and buttons frame -- TODO Create a 4th frame to hold the buttons and isolate
+        # query preview
         self.parent_frame_3 = ctk.CTkFrame(self.app)
         self.parent_frame_3.grid(row=2, column=0, sticky='nsew')
         self.parent_frame_3.columnconfigure(0, weight=1)
@@ -145,42 +148,6 @@ class LoadWindow:
 
         self.description_textbox_2 = ctk.CTkTextbox(self.parent_frame_2, font=self.text_font)
         self.description_textbox_2.grid(row=1, column=1, columnspan=2, sticky='nsew', pady=10, padx=10)
-
-        """# Frame 2 child 1 widgets
-        self.child_frame_2_1 = ctk.CTkFrame(self.parent_frame_2)
-        self.child_frame_2_1.grid(row=0, column=0, sticky='nsew')
-
-        self.placeholder_label_2_1 = ctk.CTkLabel(self.child_frame_2_1, text='Variables', font=self.label_font,
-                                                  height=30, width=30)
-        self.placeholder_label_2_1.grid(row=0, column=0, padx=(10, 0), sticky='nsew')
-
-        self.placeholder_combobox_2_1 = ctk.CTkComboBox(self.child_frame_2_1, values=['1', '2'], height=30)
-        self.placeholder_combobox_2_1.grid(row=0, column=1, sticky='nsew', padx=(10, 0))
-
-        # Frame 2 child 2 widgets
-        self.child_frame_2_2 = ctk.CTkFrame(self.parent_frame_2)
-        self.child_frame_2_2.grid(row=0, column=1, sticky='nsew')
-        self.child_frame_2_2.columnconfigure(0, weight=1)
-
-        self.placeholder_textbox_2_2 = ctk.CTkTextbox(self.child_frame_2_2, font=self.text_font, height=30)
-        self.placeholder_textbox_2_2.grid(row=0, column=0, sticky='nsew', padx=10)
-
-        # Frame 2 child 3 widgets
-        self.child_frame_2_3 = ctk.CTkFrame(self.parent_frame_2)
-        self.child_frame_2_3.grid(row=1, column=0, sticky='nsew')
-        self.child_frame_2_3.columnconfigure(0, weight=0)
-        self.child_frame_2_3.columnconfigure(1, weight=1)
-
-        self.description_label_2_3 = ctk.CTkLabel(self.child_frame_2_3, text='Description', font=self.label_font,
-                                                  height=30, width=30)
-        self.description_label_2_3.grid(row=0, column=0, sticky='nsew', padx=10)
-
-        # Frame 2 child 4 widgets
-        self.child_frame_2_4 = ctk.CTkFrame(self.parent_frame_2)
-        self.child_frame_2_4.grid(row=1, column=1, sticky='nsew')
-        self.child_frame_2_4.columnconfigure(0, weight=1)
-        self.description_textbox_2_4 = ctk.CTkTextbox(self.child_frame_2_4, font=self.text_font)
-        self.description_textbox_2_4.grid(row=0, column=0, sticky='nsew', pady=10, padx=10)"""
 
         # Frame 3 widgets
         self.query_output_textbox_3 = ctk.CTkTextbox(self.parent_frame_3, font=self.text_font)
