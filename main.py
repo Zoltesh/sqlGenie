@@ -2,10 +2,10 @@
 Load and Create sql templates to make reusing queries easier. Specifically designed to allow
 easy placeholder replacement for queries that run multiple times with different sql objects
 """
-from Windows.Controllers.load_window_controller import show_load_window
+from Windows.LoadWindow import load_window_controller
 
 import customtkinter as ctk
-from Windows import login_window, load_window
+from Windows.LoginWindow import login_window
 
 
 class MainWindow:
@@ -39,7 +39,7 @@ class MainWindow:
         login_window.show_login_window(self.root)
 
     def launch_load(self):
-        show_load_window(self.root)
+        load_window_controller.show_load_window(self.root)
 
 
 if __name__ == "__main__":

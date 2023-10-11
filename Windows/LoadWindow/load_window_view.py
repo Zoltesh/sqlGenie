@@ -2,19 +2,8 @@
 Allows the user to Load a query. The file contains placeholder text and the UI provides the user
 with the ability to fill out the placeholders in a clear and clean way
 """
-import tkinter
 
 import customtkinter as ctk
-from tkinter import filedialog
-
-
-def load_new_file():
-    # Check if changes made to currently loaded file
-    # If no changes, begin dialogue to load new file
-    # If changes made to currently loaded file, dialogue to save changes
-    # After save or no save, dialogue to open new file
-    query_file = filedialog.askopenfile()
-    print(query_file)
 
 
 def save_to_file():
@@ -31,7 +20,8 @@ def populate_fields():
 
 
 class LoadWindow:
-    def __init__(self, parent):
+    def __init__(self, parent, controller):
+        self.controller = controller
         # Parent Frames
         self.parent_frame_1 = None
         self.parent_frame_2 = None
@@ -40,29 +30,12 @@ class LoadWindow:
         # Frame 1 widgets
         self.window_title_1 = None
 
-        # Frame 2 children
-        self.child_frame_2_1 = None
-        self.child_frame_2_2 = None
-        self.child_frame_2_3 = None
-        self.child_frame_2_4 = None
-
-        # Frame 2 child 1 widgets
-        self.placeholder_label_2 = None
-        self.placeholder_combobox_2 = None
-        self.placeholder_textbox_2 = None
-
-        # Frame 2 child 2 widgets
-        self.placeholder_textbox_2 = None
-
-        # Frame 2 child 3 widgets
+        # Frame 2 widgets
+        self.variable_label_2 = None
+        self.variable_combobox_2 = None
+        self.variable_textbox_2 = None
         self.description_label_2 = None
-
-        # Frame 2 child 4 widgets
         self.description_textbox_2 = None
-
-        # Frame 3 children
-        self.child_frame_3_1 = None
-        self.child_frame_3_2 = None
 
         # Frame 3 widgets
         self.query_output_textbox_3 = None
@@ -75,7 +48,6 @@ class LoadWindow:
         self.text_font = None
         self.label_font = None
         self.title_font = None
-        self.placeholder_value = None
         self.description_box = None
         self.query_input = None
 
@@ -132,15 +104,15 @@ class LoadWindow:
         self.window_title_1.grid(row=0, column=0, sticky='nsew')
 
         # Frame 2's widgets
-        self.placeholder_label_2 = ctk.CTkLabel(self.parent_frame_2, text='Variables', font=self.label_font,
+        self.variable_label_2 = ctk.CTkLabel(self.parent_frame_2, text='Variables', font=self.label_font,
                                                 width=30)
-        self.placeholder_label_2.grid(row=0, column=0, padx=(10, 0), sticky='w')
+        self.variable_label_2.grid(row=0, column=0, padx=(10, 0), sticky='w')
 
-        self.placeholder_combobox_2 = ctk.CTkComboBox(self.parent_frame_2, values=['1', '2'])
-        self.placeholder_combobox_2.grid(row=0, column=1, sticky='nsew', padx=(10, 0))
+        self.variable_combobox_2 = ctk.CTkComboBox(self.parent_frame_2, values=['1', '2'])
+        self.variable_combobox_2.grid(row=0, column=1, sticky='nsew', padx=(10, 0))
 
-        self.placeholder_textbox_2 = ctk.CTkTextbox(self.parent_frame_2, font=self.text_font, height=30)
-        self.placeholder_textbox_2.grid(row=0, column=2, sticky='nsew', padx=10)
+        self.variable_textbox_2 = ctk.CTkTextbox(self.parent_frame_2, font=self.text_font, height=30)
+        self.variable_textbox_2.grid(row=0, column=2, sticky='nsew', padx=10)
 
         self.description_label_2 = ctk.CTkLabel(self.parent_frame_2, text='Description', font=self.label_font,
                                                 width=30)
@@ -159,13 +131,13 @@ class LoadWindow:
                                           command=self.app.destroy)
         self.cancel_btn_3.grid(row=1, column=0, padx=10, pady=10, sticky='sw')
 
-        self.load_new_btn_3 = ctk.CTkButton(self.parent_frame_3, text='Load New', font=self.button_font, width=40)
+        self.load_new_btn_3 = ctk.CTkButton(self.parent_frame_3, text='Load New', font=self.button_font, width=40,
+                                            command=self.controller.model.load_new_file)
         self.load_new_btn_3.grid(row=1, column=1, pady=10, sticky='s')
 
         self.save_btn_3 = ctk.CTkButton(self.parent_frame_3, text='Save', font=self.button_font, width=40)
         self.save_btn_3.grid(row=1, column=2, padx=10, pady=10, sticky='se')
 
 
-def show_load_window(parent):
-    load_win = LoadWindow(parent)
-    parent.wait_window(load_win.app)
+    def update_fields(self, data):
+        self.variable_label_2['values'] = data
