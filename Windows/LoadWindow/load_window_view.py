@@ -6,19 +6,6 @@ with the ability to fill out the placeholders in a clear and clean way
 import customtkinter as ctk
 
 
-def save_to_file():
-    # Select file to save to
-    # Make sure loaded file is same file being written to
-    pass
-
-
-def populate_fields():
-    # Insert data from loaded query into vars and description
-    # Selected var ON SELECT should display partial line where value resides, with the value being
-    # highlighted or otherwise stand out
-    pass
-
-
 class LoadWindow:
     def __init__(self, parent, controller):
         self.controller = controller
@@ -105,11 +92,13 @@ class LoadWindow:
 
         # Frame 2's widgets
         self.variable_label_2 = ctk.CTkLabel(self.parent_frame_2, text='Variables', font=self.label_font,
-                                                width=30)
+                                             width=30)
         self.variable_label_2.grid(row=0, column=0, padx=(10, 0), sticky='w')
 
-        self.variable_combobox_2 = ctk.CTkComboBox(self.parent_frame_2, values=['1', '2'])
+        self.variable_combobox_2 = ctk.CTkComboBox(self.parent_frame_2, values=[''],
+                                                   command=self.variable_combobox_2_callback)
         self.variable_combobox_2.grid(row=0, column=1, sticky='nsew', padx=(10, 0))
+        self.variable_combobox_2.set('')
 
         self.variable_textbox_2 = ctk.CTkTextbox(self.parent_frame_2, font=self.text_font, height=30)
         self.variable_textbox_2.grid(row=0, column=2, sticky='nsew', padx=10)
@@ -118,7 +107,7 @@ class LoadWindow:
                                                 width=30)
         self.description_label_2.grid(row=1, column=0, sticky='nw', padx=10)
 
-        self.description_textbox_2 = ctk.CTkTextbox(self.parent_frame_2, font=self.text_font)
+        self.description_textbox_2 = ctk.CTkTextbox(self.parent_frame_2, font=self.text_font, wrap='word')
         self.description_textbox_2.grid(row=1, column=1, columnspan=2, sticky='nsew', pady=10, padx=10)
 
         # Frame 3 widgets
@@ -138,6 +127,33 @@ class LoadWindow:
         self.save_btn_3 = ctk.CTkButton(self.parent_frame_3, text='Save', font=self.button_font, width=40)
         self.save_btn_3.grid(row=1, column=2, padx=10, pady=10, sticky='se')
 
-
     def update_fields(self, data):
-        self.variable_label_2['values'] = data
+        variable_names = list(self.controller.variable_hashmap.keys())
+
+        # Reset description textbox
+        self.description_textbox_2.configure(state='normal')
+        self.description_textbox_2.delete('1.0', 'end')
+
+        # Set combobox values to variable name
+        self.variable_combobox_2.configure(values=variable_names)
+        # Set selected combox value to index 0
+        self.variable_combobox_2.set(variable_names[0])
+
+        # Insert the new description and disable it so it can't be edited
+        self.description_textbox_2.insert('0.0',
+                                          text=self.controller.variable_hashmap[
+                                              self.variable_combobox_2.get()]['description'])
+        self.description_textbox_2.configure(state='disabled')
+
+    def variable_combobox_2_callback(self, event=None):
+        selected_variable = self.variable_combobox_2.get()
+        try:
+            description = self.controller.variable_hashmap[selected_variable]['description']
+        except TypeError:
+            pass
+
+        # Reset and populate the description textbox
+        self.description_textbox_2.configure(state='normal')
+        self.description_textbox_2.delete('1.0', 'end')
+        self.description_textbox_2.insert('0.0', text='description')
+        self.description_textbox_2.configure(state='disabled')

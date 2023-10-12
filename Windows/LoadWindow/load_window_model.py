@@ -3,15 +3,19 @@ from tkinter import filedialog
 
 
 class LoadWindowModel:
-    def __init__(self):
+    def __init__(self, on_file_loaded_callback=None):
         self.QUERY_PATH = None
         self.VAR_LIST = []
+        self.on_file_loaded = on_file_loaded_callback
+        self.variable_hashmap = {}
 
     def load_new_file(self):
         self.QUERY_PATH = filedialog.askopenfilename(filetypes=[('SQL Files', '*.sql')])
         if self.QUERY_PATH:
             self.parse_variables(self.QUERY_PATH)
-            # Not populating fields here as it's a UI task
+            self.create_variable_hashmap()
+            if self.on_file_loaded:
+                self.on_file_loaded()
 
     def parse_variables(self, path):
         # State definitions
@@ -55,6 +59,12 @@ class LoadWindowModel:
                     # description)
                     if self.VAR_LIST:
                         self.VAR_LIST[-1]['description'] = description.strip()
+
+    def create_variable_hashmap(self):
+        self.variable_hashmap = {d['variable']: d for d in self.VAR_LIST}
+
+    def get_variable_hashmap(self):
+        return self.variable_hashmap
 
     def save_to_file(self):
         # Select file to save to

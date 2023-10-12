@@ -14,7 +14,7 @@ FROM (
         AND sales_flat_order.website_id IN (--MY_VALUE--)
 		--VARIABLE_END
 		--DESCRIPTION_START
-		--[MY_VALUE] web ids
+		--[MY_VALUE] this is a super duper long comment to see if the words wrap. I'm wondering if the comment has to be multiline how my program will handle it
 		--DESCRIPTION_END
         AND sales_flat_order.completed_at >= CURDATE()
     GROUP BY
