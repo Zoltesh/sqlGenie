@@ -21,6 +21,7 @@ class LoadWindow:
         self.variable_label_2 = None
         self.variable_combobox_2 = None
         self.variable_textbox_2 = None
+        self.submit_button_2 = None
         self.description_label_2 = None
         self.description_textbox_2 = None
 
@@ -103,6 +104,10 @@ class LoadWindow:
         self.variable_textbox_2 = ctk.CTkTextbox(self.parent_frame_2, font=self.text_font, height=30)
         self.variable_textbox_2.grid(row=0, column=2, sticky='nsew', padx=10)
 
+        self.submit_button_2 = ctk.CTkButton(self.parent_frame_2, text='Update', font=self.button_font, width=40,
+                                             command=self.update_variable_callback)
+        self.submit_button_2.grid(row=0, column=3, sticky='nsew', padx=10)
+
         self.description_label_2 = ctk.CTkLabel(self.parent_frame_2, text='Description', font=self.label_font,
                                                 width=30)
         self.description_label_2.grid(row=1, column=0, sticky='nw', padx=10)
@@ -124,7 +129,8 @@ class LoadWindow:
                                             command=self.controller.model.load_new_file)
         self.load_new_btn_3.grid(row=1, column=1, pady=10, sticky='s')
 
-        self.save_btn_3 = ctk.CTkButton(self.parent_frame_3, text='Save', font=self.button_font, width=40)
+        self.save_btn_3 = ctk.CTkButton(self.parent_frame_3, text='Save', font=self.button_font, width=40,
+                                        command=self.on_save)
         self.save_btn_3.grid(row=1, column=2, padx=10, pady=10, sticky='se')
 
     def update_fields(self, data):
@@ -139,7 +145,9 @@ class LoadWindow:
         # Set selected combox value to index 0
         self.variable_combobox_2.set(variable_names[0])
 
-        # Insert the new description and disable it so it can't be edited
+        # Set variable textbox to the currently selected value
+        self.variable_textbox_2.insert(0.0, text=variable_names[0])
+        # Insert the new description and disable it, so it can't be edited
         self.description_textbox_2.insert('0.0',
                                           text=self.controller.variable_hashmap[
                                               self.variable_combobox_2.get()]['description'])
@@ -148,12 +156,41 @@ class LoadWindow:
     def variable_combobox_2_callback(self, event=None):
         selected_variable = self.variable_combobox_2.get()
         try:
+            variable = self.controller.variable_hashmap[selected_variable]['variable']
             description = self.controller.variable_hashmap[selected_variable]['description']
-        except TypeError:
-            pass
+            # Reset and populate the description textbox
+            self.description_textbox_2.delete('1.0', 'end')
+            self.description_textbox_2.insert('0.0', text=description)
+            self.description_textbox_2.configure(state='disabled')
 
-        # Reset and populate the description textbox
+            self.variable_textbox_2.delete('1.0', 'end')
+            self.variable_textbox_2.insert('0.0', text=variable)
+        except TypeError as e:
+            print(f'Error: {e}')
+
+    def update_variable_callback(self):
+        try:
+            new_value = self.variable_textbox_2.get('1.0', 'end')
+            self.controller.variable_hashmap[self.variable_combobox_2.get()]['variable'] = new_value
+        except Exception as e:
+            print(e)
+
+    def refresh_combobox(self):
+        """ Refreshes the combobox with the latest variables. """
+        variable_names = list(self.controller.variable_hashmap.keys())
+        self.variable_combobox_2.configure(values=variable_names)
         self.description_textbox_2.configure(state='normal')
         self.description_textbox_2.delete('1.0', 'end')
-        self.description_textbox_2.insert('0.0', text='description')
-        self.description_textbox_2.configure(state='disabled')
+        self.variable_textbox_2.delete('1.0', 'end')
+        if variable_names:
+            variable_item = self.controller.variable_hashmap[variable_names[0]]
+            self.variable_combobox_2.set(variable_item['variable'])
+            self.description_textbox_2.insert('0.0', text=variable_item['description'])
+            self.description_textbox_2.configure(state='disabled')
+        else:
+            self.variable_combobox_2.set('')
+
+    def on_save(self):
+        modified_query = self.controller.model.generate_modified_query()
+        self.controller.model.save_to_file(modified_query)
+        self.refresh_combobox()

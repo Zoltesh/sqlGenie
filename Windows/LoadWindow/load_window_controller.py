@@ -13,10 +13,9 @@ class LoadWindowController:
         self.view = LoadWindow(parent, self)
 
     def populate_fields(self):
-        # TODO Make this actually populate the fields in the view
+        self.variable_hashmap = self.model.get_variable_hashmap()
         data = self.model.VAR_LIST
         self.view.update_fields(data)
-        self.variable_hashmap = self.model.get_variable_hashmap()
 
 
 def show_load_window(parent):
