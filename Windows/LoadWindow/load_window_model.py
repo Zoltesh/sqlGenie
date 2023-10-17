@@ -72,19 +72,25 @@ class LoadWindowModel:
 
     def save_to_file(self, modified_query_content):
         # Generate the output filename
-        output_filename = self.QUERY_PATH.replace('.sql', 'modified.sql')
+        try:
+            output_filename = self.QUERY_PATH.replace('.sql', 'modified.sql')
 
-        # Save the modified query to the new file
-        with open(output_filename, 'w') as out_file:
-            out_file.write(modified_query_content)
+            # Save the modified query to the new file
+            with open(output_filename, 'w') as out_file:
+                out_file.write(modified_query_content)
+        except AttributeError as e:
+            print(e)
 
     def generate_modified_query(self):
         # Determine the correct path to read from
-        output_filename = self.QUERY_PATH.replace('.sql', 'modified.sql')
-        if os.path.exists(output_filename):
-            read_path = output_filename
-        else:
-            read_path = self.QUERY_PATH
+        try:
+            output_filename = self.QUERY_PATH.replace('.sql', 'modified.sql')
+            if os.path.exists(output_filename):
+                read_path = output_filename
+            else:
+                read_path = self.QUERY_PATH
+        except AttributeError:
+            return None
 
         # Read the content from the appropriate file
         with open(read_path, 'r') as file:
