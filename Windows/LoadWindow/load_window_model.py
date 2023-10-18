@@ -1,3 +1,8 @@
+"""
+Load Window Model handles business logic. It reads in data, parses data, and outputs data.
+It is not aware of operations in the Conrtoller or View. It is only made available through
+instances created by the Controller.
+"""
 import os
 import re
 from tkinter import filedialog
@@ -20,7 +25,6 @@ class LoadWindowModel:
             if self.on_file_loaded:
                 self.on_file_loaded()
 
-    import re
 
     def parse_variables(self, path):
         with open(path, 'r') as file:
@@ -47,15 +51,6 @@ class LoadWindowModel:
                     match = match.strip()
                     if match and match not in self.variable_hashmap:
                         self.variable_hashmap[match] = {'variable': match, 'description': 'NO DESCRIPTION'}
-
-                """# Check for a description
-                desc_match = re.search(r'--\[(.*?)\](.*)', line)
-                if desc_match:
-                    variable_name = desc_match.group(1)
-                    description = desc_match.group(2).strip()
-                    if variable_name in self.variable_hashmap:
-                        # Update the hashmap's description
-                        self.variable_hashmap[variable_name]['description'] = description"""
 
             # At the end, update VAR_LIST based on hashmap values
             self.VAR_LIST = list(self.variable_hashmap.values())
@@ -89,7 +84,8 @@ class LoadWindowModel:
         for variable, data in self.variable_hashmap.items():
             if data['variable'] != variable:
                 placeholder_in_file = '--' + variable + '--'
-                new_value = data['variable']
+                # Strip any leading or trailing whitespace
+                new_value = data['variable'].strip()
                 query_content = query_content.replace(placeholder_in_file, new_value)
                 keys_to_remove.append(variable)
 
