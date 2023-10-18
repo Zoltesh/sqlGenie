@@ -11,58 +11,54 @@ class LoadWindowModel:
         self.variable_hashmap = {}
 
     def load_new_file(self):
-        self.QUERY_PATH = None
-        self.VAR_LIST = []
-        self.variable_hashmap = {}
         self.QUERY_PATH = filedialog.askopenfilename(filetypes=[('SQL Files', '*.sql')])
         if self.QUERY_PATH:
+            self.VAR_LIST = []
+            self.variable_hashmap = {}
             self.parse_variables(self.QUERY_PATH)
             self.create_variable_hashmap()
             if self.on_file_loaded:
                 self.on_file_loaded()
 
+    import re
+
     def parse_variables(self, path):
-        # State definitions
-        outside = 0
-        inside_var = 1
-        inside_description = 2
-        state = outside
-
-        current_var = None
-
         with open(path, 'r') as file:
             for line in file:
                 line = line.strip()
 
-                # Transition states if needed
-                if 'VARIABLE_START' in line.replace(" ", ""):
-                    state = inside_var
-                    continue
-                elif 'VARIABLE_END' in line.replace(" ", ""):
-                    state = outside
-                    continue
-                elif 'DESCRIPTION_START' in line.replace(" ", ""):
-                    state = inside_description
-                    continue
-                elif 'DESCRIPTION_END' in line.replace(" ", ""):
-                    state = outside
-                    continue
+                # Check for a description
+                desc_matches = re.findall(r'--\[(.*?)\](.*?)(?=\s*--|$)', line)
+                for desc_match in desc_matches:
+                    variable_name = desc_match[0]
+                    description = desc_match[1].strip()
+                    if variable_name and description:  # Check to ensure no blank entries
+                        if variable_name in self.variable_hashmap:
+                            # Update the hashmap's description
+                            self.variable_hashmap[variable_name]['description'] = description
+                        else:
+                            # If variable not yet in hashmap, add it with description
+                            self.variable_hashmap[variable_name] = {'variable': variable_name,
+                                                                    'description': description}
 
-                # Process based on state
-                if state == inside_var:
-                    match = re.search(r'--\[?(.*?)\]?--', line)
-                    if match:
-                        current_var = match.group(1)
-                        # Check if the variable already exists in the list
-                        if not any(d['variable'] == current_var for d in self.VAR_LIST):
-                            self.VAR_LIST.append({'variable': current_var, 'description': 'NO DESCRIPTION'})
+                # Check for a variable match, but make sure the character after '--' isn't '['
+                matches = re.findall(r'--(?!\[)(.*?)--', line)
+                for match in matches:
+                    match = match.strip()
+                    if match and match not in self.variable_hashmap:
+                        self.variable_hashmap[match] = {'variable': match, 'description': 'NO DESCRIPTION'}
 
-                elif state == inside_description:
-                    _, description = line.split('] ', 1)
-                    # Update the last added dictionary (since it's in sequence, it should be the one for this
-                    # description)
-                    if self.VAR_LIST:
-                        self.VAR_LIST[-1]['description'] = description.strip()
+                """# Check for a description
+                desc_match = re.search(r'--\[(.*?)\](.*)', line)
+                if desc_match:
+                    variable_name = desc_match.group(1)
+                    description = desc_match.group(2).strip()
+                    if variable_name in self.variable_hashmap:
+                        # Update the hashmap's description
+                        self.variable_hashmap[variable_name]['description'] = description"""
+
+            # At the end, update VAR_LIST based on hashmap values
+            self.VAR_LIST = list(self.variable_hashmap.values())
 
     def create_variable_hashmap(self):
         self.variable_hashmap = {d['variable']: d for d in self.VAR_LIST}
@@ -71,49 +67,33 @@ class LoadWindowModel:
         return self.variable_hashmap
 
     def save_to_file(self, modified_query_content):
-        # Generate the output filename
         try:
             output_filename = self.QUERY_PATH.replace('.sql', 'modified.sql')
-
-            # Save the modified query to the new file
             with open(output_filename, 'w') as out_file:
                 out_file.write(modified_query_content)
         except AttributeError as e:
             print(e)
 
     def generate_modified_query(self):
-        # Determine the correct path to read from
         try:
             output_filename = self.QUERY_PATH.replace('.sql', 'modified.sql')
-            if os.path.exists(output_filename):
-                read_path = output_filename
-            else:
-                read_path = self.QUERY_PATH
+            read_path = output_filename if os.path.exists(output_filename) else self.QUERY_PATH
         except AttributeError:
             return None
 
-        # Read the content from the appropriate file
         with open(read_path, 'r') as file:
             query_content = file.read()
 
-        # List of keys to remove from hashmap after processing
         keys_to_remove = []
 
-        # Iterate over each variable in the hashmap
         for variable, data in self.variable_hashmap.items():
-            # If the internal variable has been changed by the user
-            if data['variable'] != variable:  # Using the nested 'variable' to compare
-                # Replace all instances of that variable in the query content
+            if data['variable'] != variable:
                 placeholder_in_file = '--' + variable + '--'
                 new_value = data['variable']
                 query_content = query_content.replace(placeholder_in_file, new_value)
                 keys_to_remove.append(variable)
 
-        # Remove the processed variables from the hashmap
         for key in keys_to_remove:
             del self.variable_hashmap[key]
 
         return query_content
-
-
-

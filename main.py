@@ -2,13 +2,15 @@
 Load and Create sql templates to make reusing queries easier. Specifically designed to allow
 easy placeholder replacement for queries that run multiple times with different sql objects
 """
-from Windows.LoadWindow import load_window_controller
-
 import customtkinter as ctk
+from Windows.LoadWindow import load_window_controller
 from Windows.LoginWindow import login_window
 
 
 class MainWindow:
+    """
+    One window to rule them all. Basic menu options to launch additional windows
+    """
     def __init__(self):
         self.load_btn = None
         self.login_btn = None
@@ -36,9 +38,17 @@ class MainWindow:
         self.quit_btn.grid(row=3, column=0, pady=20)
 
     def launch_login(self):
+        """
+        Simple method to instantiate and display the login window
+        :return:
+        """
         login_window.show_login_window(self.root)
 
     def launch_load(self):
+        """
+        Simple method to instantiate and display the load window
+        :return:
+        """
         load_window_controller.show_load_window(self.root)
 
 
