@@ -3,14 +3,20 @@ Facilitate connection to database. Currently only connects and prints out Succes
 Later code it to provide interaction with the database.
 """
 
-import customtkinter as ctk
-import tkinter as tk
-import pyodbc
 import threading
+import customtkinter as ctk
+import pyodbc
 
 
 class LoginWindow:
+    """
+    Establish a connection to a Microsoft SQL database
+    """
     def __init__(self, parent):
+        """
+        Initialize the window design
+        :param parent:
+        """
         self.app = ctk.CTkToplevel(parent)
         self.app.grab_set()
         self.app.geometry('600x600')
@@ -20,6 +26,10 @@ class LoginWindow:
         self.setup_ui()
 
     def setup_ui(self):
+        """
+        Setup of the widgets and design
+        :return:
+        """
         self.server_label = ctk.CTkLabel(self.app, text='Server IP:')
         self.server_label.pack(pady=10)
         self.server_entry = ctk.CTkEntry(self.app)
@@ -52,7 +62,15 @@ class LoginWindow:
         self.status_label.pack(pady=20)
 
     def attempt_login(self):
+        """
+        Test the login with the credentials provided by the user
+        :return:
+        """
         def threaded_attempt():
+            """
+            Using format provided by pyodbc
+            :return:
+            """
             server = self.server_entry.get()
             database = self.database_entry.get()
             username = self.username_entry.get()
@@ -79,5 +97,10 @@ class LoginWindow:
 
 
 def show_login_window(parent):
+    """
+    Show the login window
+    :param parent:
+    :return:
+    """
     login_win = LoginWindow(parent)
     parent.wait_window(login_win.app)

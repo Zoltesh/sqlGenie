@@ -9,25 +9,43 @@ from tkinter import filedialog
 
 
 class LoadWindowModel:
+    """
+    Handles the business logic such as reading and writing data
+    """
     def __init__(self, on_file_loaded_callback=None):
-        self.QUERY_PATH = None
-        self.VAR_LIST = []
+        """
+        Initialize file path and variable list. Use of callback method to fill data upon
+        initialization
+        :param on_file_loaded_callback:
+        """
+        self.query_path = None
+        self.var_list = []
         self.on_file_loaded = on_file_loaded_callback
         self.variable_hashmap = {}
 
     def load_new_file(self):
-        self.QUERY_PATH = filedialog.askopenfilename(filetypes=[('SQL Files', '*.sql')])
-        if self.QUERY_PATH:
-            self.VAR_LIST = []
+        """
+        Present user with file dialogue to select a sql file
+        :return:
+        """
+        self.query_path = filedialog.askopenfilename(filetypes=[('SQL Files', '*.sql')])
+        if self.query_path:
+            self.var_list = []
             self.variable_hashmap = {}
-            self.parse_variables(self.QUERY_PATH)
+            self.parse_variables(self.query_path)
             self.create_variable_hashmap()
             if self.on_file_loaded:
                 self.on_file_loaded()
 
 
     def parse_variables(self, path):
-        with open(path, 'r') as file:
+        """
+        Using custom sql tagging to retrieve variables and descriptions. Variables are denoted with
+        --VAR-- and the corresponding description is denoted with --[VAR] blah blah--
+        :param path:
+        :return:
+        """
+        with open(path, 'r', encoding='utf-8') as file:
             for line in file:
                 line = line.strip()
 
@@ -50,33 +68,55 @@ class LoadWindowModel:
                 for match in matches:
                     match = match.strip()
                     if match and match not in self.variable_hashmap:
-                        self.variable_hashmap[match] = {'variable': match, 'description': 'NO DESCRIPTION'}
+                        self.variable_hashmap[match] = {'variable': match,
+                                                        'description': 'NO DESCRIPTION'}
 
             # At the end, update VAR_LIST based on hashmap values
-            self.VAR_LIST = list(self.variable_hashmap.values())
+            self.var_list = list(self.variable_hashmap.values())
 
     def create_variable_hashmap(self):
-        self.variable_hashmap = {d['variable']: d for d in self.VAR_LIST}
+        """
+        List comprehension creates a list of dictionaires, where each outer dictionary contains a
+        key that is the name of the variable from the sql file and its value is another dictionary.
+        The format looks like this: [{'variable1': {'variable1': 'value', 'description': 'value'}},
+        {{}}]
+        :return:
+        """
+        self.variable_hashmap = {d['variable']: d for d in self.var_list}
 
     def get_variable_hashmap(self):
+        """
+        Retrieve the hashmap
+        :return:
+        """
         return self.variable_hashmap
 
     def save_to_file(self, modified_query_content):
+        """
+        Writes the modified query content to the new file.
+        :param modified_query_content:
+        :return:
+        """
         try:
-            output_filename = self.QUERY_PATH.replace('.sql', 'modified.sql')
-            with open(output_filename, 'w') as out_file:
+            output_filename = self.query_path.replace('.sql', 'modified.sql')
+            with open(output_filename, 'w', encoding='utf-8') as out_file:
                 out_file.write(modified_query_content)
         except AttributeError as e:
             print(e)
 
     def generate_modified_query(self):
+        """
+        Create a copy of the original sql query and replace all --placeholders-- with the new
+        values provided by the user.
+        :return:
+        """
         try:
-            output_filename = self.QUERY_PATH.replace('.sql', 'modified.sql')
-            read_path = output_filename if os.path.exists(output_filename) else self.QUERY_PATH
+            output_filename = self.query_path.replace('.sql', 'modified.sql')
+            read_path = output_filename if os.path.exists(output_filename) else self.query_path
         except AttributeError:
             return None
 
-        with open(read_path, 'r') as file:
+        with open(read_path, 'r', encoding='utf-8') as file:
             query_content = file.read()
 
         keys_to_remove = []

@@ -5,6 +5,9 @@ with the ability to fill out the placeholders in a clear and clean way
 
 import customtkinter as ctk
 
+# TODO Switch to a modular class like approach for the Frames
+#   class Frame1(ctk.CTkFRAME)
+
 
 class LoadWindow:
     """
@@ -137,13 +140,16 @@ class LoadWindow:
         self.variable_combobox.grid(row=0, column=1, sticky='nsew', padx=(10, 0))
         self.variable_combobox.set('')
 
-        # Display the current value of the selected variable. Is editable and savable with the Apply button
+        # Display the current value of the selected variable. Is editable and savable with the
+        # Apply button
         self.variable_textbox = ctk.CTkTextbox(self.parent_frame_2, height=30)
         self.variable_textbox.configure(**self.configs['text'])
         self.variable_textbox.grid(row=0, column=2, sticky='nsew', padx=10)
 
-        # Sets the current text in variable_textbox as the new value of the selected item's variable key
-        self.apply_button = ctk.CTkButton(self.parent_frame_2, text='Apply', command=self.update_variable_callback)
+        # Sets the current text in variable_textbox as the new value of the selected item's
+        # variable key
+        self.apply_button = ctk.CTkButton(self.parent_frame_2, text='Apply',
+                                          command=self.update_variable_callback)
         self.apply_button.configure(**self.configs['button'])
         self.apply_button.grid(row=0, column=3, sticky='nsew', padx=10)
 
@@ -152,22 +158,26 @@ class LoadWindow:
         self.description_label.configure(**self.configs['label'])
         self.description_label.grid(row=1, column=0, sticky='nw', padx=10)
 
-        # The description textbox displays the selected item's value at the 'description' key. Is not editable
+        # The description textbox displays the selected item's value at the 'description' key.
+        # Is not editable
         self.description_textbox = ctk.CTkTextbox(self.parent_frame_2, wrap='word')
         self.description_textbox.configure(**self.configs['text'])
-        self.description_textbox.grid(row=1, column=1, columnspan=2, sticky='nsew', pady=10, padx=10)
+        self.description_textbox.grid(row=1, column=1, columnspan=2, sticky='nsew', pady=10,
+                                      padx=10)
 
         # Frame 3 widgets
         # A single large textbox to provide a view of the output file
         self.query_output_textbox = ctk.CTkTextbox(self.parent_frame_3)
         self.query_output_textbox.configure(**self.configs['text'])
-        self.query_output_textbox.grid(row=0, column=0, columnspan=3, padx=10, pady=10, sticky='nsew')
+        self.query_output_textbox.grid(row=0, column=0, columnspan=3, padx=10, pady=10,
+                                       sticky='nsew')
         self.query_output_textbox.columnconfigure(0, weight=1)
         self.query_output_textbox.rowconfigure(0, weight=1)
 
         # Frame 4's widgets
         # A button to destroy the Load Window and return to the Main Window
-        self.cancel_btn = ctk.CTkButton(self.parent_frame_4, text='Cancel', command=self.app.destroy)
+        self.cancel_btn = ctk.CTkButton(self.parent_frame_4, text='Cancel',
+                                        command=self.app.destroy)
         self.cancel_btn.configure(**self.configs['button'])
         self.cancel_btn.grid(row=0, column=0, padx=10, pady=10, sticky='sw')
 
@@ -177,7 +187,8 @@ class LoadWindow:
         self.load_new_btn.configure(**self.configs['button'])
         self.load_new_btn.grid(row=0, column=1, pady=10, sticky='s')
 
-        # A button to write the changes to the output sql file. on_save creates a new file if not already present
+        # A button to write the changes to the output sql file. on_save creates a new file if not
+        # already present
         self.save_btn = ctk.CTkButton(self.parent_frame_4, text='Save', command=self.on_save)
         self.save_btn.configure(**self.configs['button'])
         self.save_btn.grid(row=0, column=2, padx=10, pady=10, sticky='se')
@@ -204,17 +215,19 @@ class LoadWindow:
             # Set selected combobox value to index 0
             self.variable_combobox.set(variable_names[0])
             # Set variable textbox to the hashmap item's description at selected variable value
-            self.variable_textbox.insert(0.0, text=variable_names[0])
+            self.variable_textbox.insert(0.0,
+                                         text=variable_names[0])
             # Insert the new description and disable it, so it can't be edited
             self.description_textbox.insert('0.0',
                                             text=self.controller.variable_hashmap[
                                                 self.variable_combobox.get()]['description'])
             self.description_textbox.configure(state='disabled')
-        # If list of variable names is empty, set combobox to a blank string and clear contents of the
-        # variable textbox
+        # If list of variable names is empty, set combobox to a blank string and clear contents of
+        # the variable textbox
         else:
             self.variable_combobox.set('')
-            self.variable_textbox.delete('1.0', 'end')
+            self.variable_textbox.delete('1.0',
+                                         'end')
 
     def handle_variable_selection_change(self, event=None):
         """
@@ -249,8 +262,8 @@ class LoadWindow:
         :return:
         """
         try:
-            # Get the current text in variable textbox and assign it to the corresponding 'variable' key in the
-            # hashmap
+            # Get the current text in variable textbox and assign it to the corresponding
+            # 'variable' key in the hashmap
             new_value = self.variable_textbox.get('1.0', 'end')
             self.controller.variable_hashmap[self.variable_combobox.get()]['variable'] = new_value
         # FIXME determine expected exceptions and catch them specifically
@@ -283,6 +296,11 @@ class LoadWindow:
             print(e)
 
     def on_save(self):
+        """
+        Calls the model instance's method to create a new sql file OR save to an existing one
+        :return:
+        """
         modified_query = self.controller.model.generate_modified_query()
         self.controller.model.save_to_file(modified_query)
+        # The combobox is cleared of variables that had changes applied
         self.refresh_combobox()

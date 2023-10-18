@@ -21,6 +21,10 @@ class MainWindow:
         self.root.mainloop()
 
     def setup_ui(self):
+        """
+        Build the main window and place widgets on it
+        :return:
+        """
         self.login_btn = ctk.CTkButton(self.root, text="Login", command=self.launch_login)
         self.root.title('Main Window')
         self.root.geometry('600x600')
